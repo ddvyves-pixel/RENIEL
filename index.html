@@ -1914,329 +1914,101 @@ reveals.forEach(element => {
 
 
 /* =========================================================
-PARTICULES — ÉTOILES + CŒURS
+   PARTICULES
 ========================================================= */
 
 const canvas =
-document.getElementById("particles");
+    document.getElementById("particles");
 
 const ctx =
-canvas.getContext("2d");
+    canvas.getContext("2d");
 
 let particles = [];
-let hearts = [];
-
-/* =========================================================
-REDIMENSIONNEMENT
-========================================================= */
 
 function resizeCanvas() {
 
-```
-canvas.width = window.innerWidth;
+    canvas.width = window.innerWidth;
 
-canvas.height = window.innerHeight;
-```
+    canvas.height = window.innerHeight;
 
 }
 
 resizeCanvas();
 
 window.addEventListener(
-"resize",
-resizeCanvas
+    "resize",
+    resizeCanvas
 );
 
-/* =========================================================
-CRÉATION DES ÉTOILES
-========================================================= */
 
 function createParticles() {
 
-```
-particles = [];
+    particles = [];
 
-const count =
-    window.innerWidth < 700 ? 35 : 65;
+    const count =
+        window.innerWidth < 700 ? 35 : 65;
 
-for (let i = 0; i < count; i++) {
+    for (let i = 0; i < count; i++) {
 
-    particles.push({
+        particles.push({
 
-        x: Math.random() * canvas.width,
+            x: Math.random() * canvas.width,
 
-        y: Math.random() * canvas.height,
+            y: Math.random() * canvas.height,
 
-        size: Math.random() * 1.7 + .3,
+            size: Math.random() * 1.7 + .3,
 
-        speed: Math.random() * .35 + .08,
+            speed: Math.random() * .35 + .08,
 
-        opacity: Math.random() * .45 + .1
+            opacity: Math.random() * .45 + .1
 
-    });
+        });
 
-}
-```
+    }
 
 }
 
 createParticles();
 
-/* =========================================================
-CRÉATION DES CŒURS
-========================================================= */
-
-function createHeart() {
-
-```
-hearts.push({
-
-    x: Math.random() * canvas.width,
-
-    y: canvas.height + 25,
-
-    size:
-        window.innerWidth < 700
-        ? Math.random() * 6 + 5
-        : Math.random() * 8 + 6,
-
-    speed:
-        Math.random() * .45 + .25,
-
-    drift:
-        (Math.random() - .5) * .35,
-
-    opacity:
-        Math.random() * .35 + .25,
-
-    life: 0,
-
-    maxLife:
-        Math.random() * 500 + 500,
-
-    rotation:
-        (Math.random() - .5) * .3,
-
-    rotationSpeed:
-        (Math.random() - .5) * .01,
-
-    color:
-        Math.random() > .5
-        ? "#df9ba8"
-        : "#ead29f"
-
-});
-```
-
-}
-
-/* =========================================================
-DESSIN D'UN CŒUR
-========================================================= */
-
-function drawHeart(x, y, size, color, opacity, rotation) {
-
-```
-ctx.save();
-
-ctx.translate(x, y);
-
-ctx.rotate(rotation);
-
-ctx.globalAlpha = opacity;
-
-ctx.fillStyle = color;
-
-ctx.beginPath();
-
-const s = size;
-
-ctx.moveTo(0, s * 0.35);
-
-ctx.bezierCurveTo(
-    -s * 1.1,
-    -s * 0.25,
-    -s * 0.75,
-    -s * 1.05,
-    0,
-    -s * 0.45
-);
-
-ctx.bezierCurveTo(
-    s * 0.75,
-    -s * 1.05,
-    s * 1.1,
-    -s * 0.25,
-    0,
-    s * 0.35
-);
-
-ctx.fill();
-
-ctx.restore();
-```
-
-}
-
-/* =========================================================
-ANIMATION
-========================================================= */
-
-let heartTimer = 0;
 
 function animateParticles() {
 
-ctx.clearRect(
-    0,
-    0,
-    canvas.width,
-    canvas.height
-);
-
-
-/* =====================================================
-   ÉTOILES
-===================================================== */
-
-particles.forEach(p => {
-
-    p.y -= p.speed;
-
-    if (p.y < -10) {
-
-        p.y =
-            canvas.height + 10;
-
-        p.x =
-            Math.random() * canvas.width;
-
-    }
-
-    ctx.beginPath();
-
-    ctx.arc(
-        p.x,
-        p.y,
-        p.size,
+    ctx.clearRect(
         0,
-        Math.PI * 2
+        0,
+        canvas.width,
+        canvas.height
     );
 
-    ctx.fillStyle =
-        `rgba(234,210,159,${p.opacity})`;
+    particles.forEach(p => {
 
-    ctx.fill();
+        p.y -= p.speed;
 
-});
+        if (p.y < -10) {
+            p.y = canvas.height + 10;
+            p.x = Math.random() * canvas.width;
+        }
 
+        ctx.beginPath();
 
-/* =====================================================
-   APPARITION DES CŒURS
-===================================================== */
+        ctx.arc(
+            p.x,
+            p.y,
+            p.size,
+            0,
+            Math.PI * 2
+        );
 
-heartTimer++;
+        ctx.fillStyle =
+            `rgba(234,210,159,${p.opacity})`;
 
-/*
-   Un nouveau cœur environ toutes les
-   1,5 à 3 secondes.
-*/
+        ctx.fill();
 
-const heartFrequency =
-    window.innerWidth < 700
-    ? 150
-    : 100;
+    });
 
-if (heartTimer > heartFrequency) {
-
-    createHeart();
-
-    heartTimer = 0;
-
-}
-
-
-/* =====================================================
-   ANIMATION DES CŒURS
-===================================================== */
-
-hearts.forEach((heart, index) => {
-
-    heart.y -= heart.speed;
-
-    heart.x +=
-        Math.sin(heart.life * .025) * .18
-        + heart.drift;
-
-    heart.life++;
-
-    heart.rotation +=
-        heart.rotationSpeed;
-
-
-    /*
-       Apparition progressive
-    */
-
-    let opacity =
-        heart.opacity;
-
-    if (heart.life < 80) {
-
-        opacity =
-            heart.opacity *
-            (heart.life / 80);
-
-    }
-
-
-    /*
-       Disparition progressive
-    */
-
-    if (
-        heart.life >
-        heart.maxLife - 100
-    ) {
-
-        opacity =
-            heart.opacity *
-            (
-                (heart.maxLife - heart.life)
-                / 100
-            );
-
-    }
-
-
-    drawHeart(
-        heart.x,
-        heart.y,
-        heart.size,
-        heart.color,
-        Math.max(0, opacity),
-        heart.rotation
+    requestAnimationFrame(
+        animateParticles
     );
-
-
-    /*
-       Suppression du cœur
-    */
-
-    if (
-        heart.life >= heart.maxLife ||
-        heart.y < -40
-    ) {
-
-        hearts.splice(index, 1);
-
-    }
-
-});
-
-
-requestAnimationFrame(
-    animateParticles
-);
 
 }
 
